@@ -28,6 +28,7 @@ WORK_STATUS_PATH = "/openapi/v1/work/status"
 WORK_BATCH_STATUS_PATH = "/openapi/v1/work/batch-status"
 
 TERMINAL_OK = "completed"
+PLAN_REQUIRED = 2103  # ret code for "Pro plan or above is required"
 TERMINAL_FAIL = "failed"
 
 
@@ -54,8 +55,9 @@ class AdsTurboClient:
         self.base_url = raw_base.rstrip("/")
         if not self.api_key:
             raise AdsTurboAuthError(
-                "ADSTURBO_API_KEY is not set. Get a key at https://adsturbo.ai?channel=github "
-                "and export it: export ADSTURBO_API_KEY=..."
+                "ADSTURBO_API_KEY is not set. Sign up at https://adsturbo.ai?channel=github, then create "
+                "a key at https://adsturbo.ai/iris/api (Workspace -> API -> Create API Key) and run: "
+                "export ADSTURBO_API_KEY=..."
             )
         self.session = requests.Session()
         self.session.headers.update({"Authorization": f"Bearer {self.api_key}"})
@@ -70,7 +72,8 @@ class AdsTurboClient:
         """Turn a raw response into the `ent` payload, or raise a typed error."""
         if resp.status_code == 401:
             raise AdsTurboAuthError(
-                "API key is invalid or expired. Check ADSTURBO_API_KEY."
+                "API key is invalid or expired. Check ADSTURBO_API_KEY, or create a new "
+                "key at https://adsturbo.ai/iris/api."
             )
         if 300 <= resp.status_code < 400:
             # Following a redirect would downgrade POST to GET and surface as a
@@ -203,6 +206,8 @@ def run_cli(parser, handlers: dict) -> None:
         sys.exit(2)
     except AdsTurboError as exc:
         print(f"Request failed: {exc.msg}", file=sys.stderr)
+        if exc.code == PLAN_REQUIRED:
+            print("This needs a Pro plan or above. Upgrade at https://adsturbo.ai/pricing", file=sys.stderr)
         sys.exit(1)
     except TimeoutError as exc:
         print(f"Timed out: {exc}", file=sys.stderr)
