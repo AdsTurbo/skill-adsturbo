@@ -36,7 +36,8 @@ ClawHub also has one smaller package per capability (`adsturbo-digital-human`, `
 ## Setup
 
 - Python 3.8+
-- An AdsTurbo API key from https://adsturbo.ai?channel=github
+- An AdsTurbo API key: sign up at https://adsturbo.ai?channel=github, then open https://adsturbo.ai/iris/api
+  (Workspace → API) and click **Create API Key**
 
 ```bash
 export ADSTURBO_API_KEY="your_api_key"
@@ -45,7 +46,7 @@ pip install -r scripts/requirements.txt
 
 Optional: `ADSTURBO_BASE_URL`, default `https://adsturbo.ai/klian/novartapi`.
 
-Most tools need a Pro plan or above; a free key returns `Pro plan or above is required`.
+Most tools need a Pro plan or above; a free key returns `Pro plan or above is required` (upgrade at https://adsturbo.ai/pricing).
 
 ## What is inside
 
@@ -82,7 +83,7 @@ Video tasks are asynchronous. The scripts submit and then poll until the result 
 
 ## 中文说明
 
-AdsTurbo 开放接口的 agent skill：数字人口播、视频生成、广告复刻（含可改台词、换人换货的草稿流程）、视频精修与改造、AI 图片创作。安装方式同上，国内用户也可以在 [skillhub.cn](https://skillhub.cn) 搜索「AdsTurbo」安装。使用前在 https://adsturbo.ai?channel=github 获取 API Key，设置 `ADSTURBO_API_KEY` 环境变量。完整接口文档见 [doc.adsturbo.ai](https://doc.adsturbo.ai)。
+AdsTurbo 开放接口的 agent skill：数字人口播、视频生成、广告复刻（含可改台词、换人换货的草稿流程）、视频精修与改造、AI 图片创作。安装方式同上，国内用户也可以在 [skillhub.cn](https://skillhub.cn) 搜索「AdsTurbo」安装。使用前先在 https://adsturbo.ai?channel=github 注册，再到 https://adsturbo.ai/iris/api（工作台 → API）点「创建 API 密钥」，把 Key 设到 `ADSTURBO_API_KEY` 环境变量。完整接口文档见 [doc.adsturbo.ai](https://doc.adsturbo.ai)。
 
 ## License
 

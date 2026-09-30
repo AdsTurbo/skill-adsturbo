@@ -1,6 +1,6 @@
 ---
 name: adsturbo
-description: AdsTurbo full toolkit: AI spokesperson video, video generation & extension, ad cloning, watermark removal, 4K upscaling, video translation, character swap, motion control, subtitles, AI image generation and e-commerce photos. Best for workflows spanning multiple capabilities. AdsTurbo 全能力入口：AI 数字人口播、视频生成与延长、广告复刻、去水印、4K 超分、视频翻译、换角色、动作控制、字幕、AI 图片生成与电商图。适合需要跨能力串联的完整创作流程。
+description: AdsTurbo full toolkit: AI spokesperson video, video generation & extension, ad cloning, watermark removal, 4K upscaling, video translation, character swap, motion control, subtitles, AI image generation and e-commerce photos. Best for workflows spanning multiple capabilities. Requires an AdsTurbo API key, created at https://adsturbo.ai/iris/api. AdsTurbo 全能力入口：AI 数字人口播、视频生成与延长、广告复刻、去水印、4K 超分、视频翻译、换角色、动作控制、字幕、AI 图片生成与电商图。适合需要跨能力串联的完整创作流程。需要 AdsTurbo API Key，在 https://adsturbo.ai/iris/api 创建。
 ---
 # AdsTurbo AI Creation Suite
 
@@ -15,8 +15,18 @@ For a single task (just remove a watermark, just generate one image), installing
 ## Prerequisites
 
 - Python 3.8+, `pip install -r scripts/requirements.txt`
-- Environment variable `ADSTURBO_API_KEY` (obtain at https://adsturbo.ai?channel=github)
+- An AdsTurbo API key in the environment variable `ADSTURBO_API_KEY` (see below for how to get one)
 - Optional `ADSTURBO_BASE_URL`, defaults to `https://adsturbo.ai/klian/novartapi`
+
+### Getting an API key
+
+1. Sign up or sign in at https://adsturbo.ai?channel=github
+2. Open https://adsturbo.ai/iris/api (Workspace → API), click "Create API Key" and copy the key
+3. `export ADSTURBO_API_KEY=<your key>`
+
+Most capabilities need a Pro plan or above; a free account gets `Pro plan or above is required`. Upgrade at https://adsturbo.ai/pricing.
+
+**If the user has no key yet, tell them first**: when `ADSTURBO_API_KEY` is not set, or a script reports a missing key or a 401, do not keep retrying. Tell the user they need an AdsTurbo API key and give them the three steps above. Keep the key in the environment variable and never echo it back in a reply.
 
 ## Intent → script
 
@@ -169,8 +179,18 @@ AdsTurbo 的全部开放能力：数字人口播、视频生成、广告复刻�
 ## 前置条件
 
 - Python 3.8+，`pip install -r scripts/requirements.txt`
-- 环境变量 `ADSTURBO_API_KEY`（在 https://adsturbo.ai?channel=github 获取）
+- AdsTurbo API Key，放在环境变量 `ADSTURBO_API_KEY` 里，获取方法见下
 - 可选 `ADSTURBO_BASE_URL`，默认 `https://adsturbo.ai/klian/novartapi`
+
+### 获取 API Key
+
+1. 在 https://adsturbo.ai?channel=github 注册或登录
+2. 打开 https://adsturbo.ai/iris/api（工作台 → API），点「创建 API 密钥」，复制生成的 Key
+3. `export ADSTURBO_API_KEY=<你的 Key>`
+
+大多数能力需要 Pro 及以上套餐，免费账号会返回 `Pro plan or above is required`，升级在 https://adsturbo.ai/pricing。
+
+**用户还没有 Key 时先告诉他**：`ADSTURBO_API_KEY` 没设置、脚本报 Key 缺失或 401 时，不要反复重试，直接告诉用户需要 AdsTurbo API Key，并把上面三步发给他。Key 只放在环境变量里，回复里不要回显。
 
 ## 意图 → 脚本
 
