@@ -78,7 +78,6 @@ Video tasks are asynchronous. The scripts submit and then poll until the result 
 
 - Website: [adsturbo.ai](https://adsturbo.ai)
 - Open API: [adsturbo.ai/open-api](https://adsturbo.ai/open-api)
-- API reference: [adsturbo.readme.io](https://adsturbo.readme.io)
 
 ## 中文说明
 
