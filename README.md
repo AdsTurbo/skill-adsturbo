@@ -1,68 +1,88 @@
-# AdsTurbo API Skill
+# AdsTurbo Skill
 
-Agent-friendly Python scripts and skill instructions for the [AdsTurbo Open API](https://adsturbo.ai/open-api).
+Agent skill for the [AdsTurbo Open API](https://adsturbo.ai/open-api): Python scripts plus instructions an agent (Claude Code, Codex, OpenClaw and others) can use to make ad creatives end to end.
 
-Use this repository when you want an agent or local workflow to call AdsTurbo API modules for image generation, AI actors, custom personas, Ad Clone, video translation, lip sync, character swap, upscaling, watermark removal, motion control, subtitles, and video analysis.
+- AI spokesperson videos: platform avatars, a custom avatar cloned from your photo and voice, or lip-sync a single portrait
+- Video generation: text / image to video, first-and-last-frame, extend or edit an existing clip
+- Ad clone: storyboard a reference ad and shoot your own version, or open an **editable draft** to rewrite the lines, swap in your own people or products and check the price before generating
+- Cleanup: watermark / object removal, hard-subtitle erase, 4K upscale, subtitles
+- Transform: translate and re-voice, character swap, motion control
+- Images: text-to-image and editing, background removal, e-commerce product shots, posters
 
-## What this repo is
+> This repository is generated from the same source as the AdsTurbo packages on ClawHub and skillhub.cn. Open an issue here; pull requests are welcome but get folded back into that source.
 
-- A Codex-style skill definition in `SKILL.MD`
-- Python wrappers in `scripts/`
-- Reference docs in `references/`
-- A practical API operations kit, not a prompt-only creative planning pack
+## Install
 
-For a free creative planning workflow, see [`product-page-to-ad-brief`](https://github.com/AdsTurbo/product-page-to-ad-brief).
+Claude Code:
 
-## Prerequisites
+```bash
+git clone https://github.com/AdsTurbo/skill-adsturbo ~/.claude/skills/adsturbo
+```
+
+Codex:
+
+```bash
+git clone https://github.com/AdsTurbo/skill-adsturbo ~/.codex/skills/adsturbo
+```
+
+OpenClaw / ClawHub:
+
+```bash
+clawhub install adsturbo/adsturbo
+```
+
+ClawHub also has one smaller package per capability (`adsturbo-digital-human`, `adsturbo-video-generation`, `adsturbo-ad-clone`, `adsturbo-video-enhance`, `adsturbo-video-transform`, `adsturbo-image`) if you only need one of them.
+
+## Setup
 
 - Python 3.8+
-- An AdsTurbo API key
+- An AdsTurbo API key from https://adsturbo.ai?channel=github
 
 ```bash
 export ADSTURBO_API_KEY="your_api_key"
 pip install -r scripts/requirements.txt
 ```
 
-Optional:
+Optional: `ADSTURBO_BASE_URL`, default `https://adsturbo.ai/klian/novartapi`.
+
+Most tools need a Pro plan or above; a free key returns `Pro plan or above is required`.
+
+## What is inside
+
+| Path | What it is |
+| --- | --- |
+| `SKILL.md` | Entry point the agent reads first: when to use which tool, hard constraints, how to reply |
+| `scripts/*.py` | One CLI per capability: `digital_human`, `video_generation`, `ad_clone`, `video_enhance`, `video_transform`, `image`, `upload`, `work` |
+| `references/*.md` | Full parameters and examples per capability, read on demand |
 
 ```bash
-export ADSTURBO_BASE_URL="https://adsturbo.ai/klian/novartapi"
+# Generate a product image
+python3 scripts/image.py create --prompt "A black insulated bottle on a marble countertop, studio light" --ratio 1:1
+
+# Clone a reference ad with edited lines, check the price, then generate
+python3 scripts/ad_clone.py draft-create --video-url https://example.com/ref.mp4
+python3 scripts/ad_clone.py draft-preview --clone-id <clone_id> --line "L1=Your new line"
+python3 scripts/ad_clone.py draft-submit --clone-id <clone_id> --line "L1=Your new line"
 ```
 
-## Modules
-
-| Module | Script | What it does |
-| --- | --- | --- |
-| AI Actor | `scripts/ai_actor.py` | List actors, generate TTS audio, create actor videos |
-| Persona | `scripts/persona.py` | Create, list, delete, and query custom personas |
-| Ad Clone | `scripts/adclone.py` | Analyze a reference clip and generate new ad variations |
-| Video Tools | `scripts/video_tools.py` | Lip sync, translate, upscale, inpaint, character swap, motion control, subtitles, analysis |
-| Image | `scripts/image.py` | Generate or edit images |
-
-Read `SKILL.MD` and each file in `references/` before wiring these scripts into an agent.
-
-## Example workflow
-
-```bash
-python scripts/image.py run \
-  --prompt "A clean ecommerce product ad image, bright studio lighting, 9:16 composition" \
-  --ratio 9:16
-```
-
-Most video tasks are asynchronous. The skill defaults to a submit-and-poll pattern so agents can return the final result when the job completes.
+Video tasks are asynchronous. The scripts submit and then poll until the result is ready; if a wait times out, resume with `query --workspace-id <id>` instead of resubmitting, which would charge again.
 
 ## Safety and usage boundaries
 
-- Use references as inspiration for structure, pacing, and format.
+- Use references as inspiration for structure, pacing and format.
 - Do not use this toolkit to copy protected creative assets or impersonate people without permission.
-- Users are responsible for ad claims, platform policy compliance, and rights clearance.
+- Users are responsible for ad claims, platform policy compliance and rights clearance.
 - No hidden telemetry is included in this repository.
 
 ## Links
 
 - Website: [adsturbo.ai](https://adsturbo.ai)
 - Open API: [adsturbo.ai/open-api](https://adsturbo.ai/open-api)
-- Features: [adsturbo.ai/features](https://adsturbo.ai/features)
+- API reference: [adsturbo.readme.io](https://adsturbo.readme.io)
+
+## 中文说明
+
+AdsTurbo 开放接口的 agent skill：数字人口播、视频生成、广告复刻（含可改台词、换人换货的草稿流程）、视频精修与改造、AI 图片创作。安装方式同上，国内用户也可以在 [skillhub.cn](https://skillhub.cn) 搜索「AdsTurbo」安装。使用前在 https://adsturbo.ai?channel=github 获取 API Key，设置 `ADSTURBO_API_KEY` 环境变量。
 
 ## License
 

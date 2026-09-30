@@ -1,93 +1,197 @@
 #!/usr/bin/env python3
-"""
-Image module — AI image creation (OpenAPI v1).
+"""Image creation and retouching.
 
-Subcommands:
-  run       Submit image creation and wait for result
-  submit    Submit only, print workspace IDs
-  query     Poll an existing workspace ID
+create       : text to image, or edit an image by passing image_urls (v1, sync-capable)
+cutout       : remove the background
+ecommerce    : product photo set -- hero banner, lifestyle, detail, material, ...
+poster       : campaign poster from an event brief
+erase        : remove watermarks / objects, optionally mask-guided
+upscale      : raise resolution
 """
+
+from __future__ import annotations
 
 import argparse
-import json
-import os
-import sys
 
-sys.path.insert(0, os.path.dirname(__file__))
-from shared.client import AdsTurboClient
+from shared.client import add_async_flags, run_cli, submit_and_maybe_poll
 
-
-def cmd_run(args, _parser):
-    client = AdsTurboClient()
-    body = _build_body(args)
-    print("Submitting image creation task...", file=sys.stderr)
-    result = client.post("/openapi/v1/img/create", body)
-    images = result.get("images", [])
-    ws_ids = result.get("workspace_ids", [])
-    if images:
-        print(json.dumps(result, indent=2, ensure_ascii=False))
-    elif ws_ids:
-        print(f"Task submitted. Workspace IDs: {ws_ids}", file=sys.stderr)
-        for ws_id in ws_ids:
-            detail = client.poll_work_status(str(ws_id), timeout=args.timeout, interval=args.interval)
-            print(json.dumps(detail, indent=2, ensure_ascii=False))
-    else:
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+CREATE = "/openapi/v1/img/create"
+CUTOUT = "/openapi/v2beta/image/cutout"
+ECOMMERCE = "/openapi/v2beta/image/ecommerce"
+POSTER = "/openapi/v2beta/image/poster"
+ERASER = "/openapi/v2beta/image/magic-eraser"
+ENHANCE = "/openapi/v2beta/image/enhance"
 
 
-def cmd_submit(args, _parser):
-    client = AdsTurboClient()
-    body = _build_body(args)
-    result = client.post("/openapi/v1/img/create", body)
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+def cmd_create(client, args) -> dict:
+    """Empty image_urls means text-to-image; non-empty means edit those images."""
+    return client.post(CREATE, {
+        "prompt": args.prompt,
+        "image_urls": args.image_urls,
+        "model": args.model,
+        "ratio": args.ratio,
+        "resolution": args.resolution,
+        "quality": args.quality,
+        "num_images": args.num_images,
+        "sync_mod": not args.async_mode,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    })
 
 
-def cmd_query(args, _parser):
-    client = AdsTurboClient()
-    detail = client.poll_work_status(args.workspace_id, timeout=args.timeout, interval=args.interval)
-    print(json.dumps(detail, indent=2, ensure_ascii=False))
+def cmd_cutout(client, args) -> dict:
+    return submit_and_maybe_poll(client, CUTOUT, {
+        "method": "rm_background",
+        "image_url": args.image_url,
+        "output_format": args.output_format,
+        "resolution": args.resolution,
+        "workspace_id": args.workspace_id,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    }, args)
 
 
-def _build_body(args) -> dict:
-    body = {}
-    for key in ("prompt", "model", "ratio", "resolution"):
-        val = getattr(args, key, None)
-        if val is not None:
-            body[key] = val
-    if args.image_urls:
-        body["image_urls"] = [u.strip() for u in args.image_urls.split(",") if u.strip()]
-    if args.concurrency is not None:
-        body["concurrency"] = args.concurrency
-    if args.sync_mod:
-        body["sync_mod"] = True
-    return body
+def cmd_ecommerce(client, args) -> dict:
+    """methods picks which shots to produce; omit it for the default hero banner."""
+    return submit_and_maybe_poll(client, ECOMMERCE, {
+        "methods": args.methods,
+        "user_input": args.user_input,
+        "product_info": args.product_info,
+        "reference_image_urls": args.reference_image_urls,
+        "language": args.language,
+        "aspect_ratio": args.aspect_ratio,
+        "resolution": args.resolution,
+        "workspace_id": args.workspace_id,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    }, args)
 
 
-def main():
-    parser = argparse.ArgumentParser(description="AdsTurbo Image Creation (OpenAPI v1)")
-    sub = parser.add_subparsers(dest="subcommand")
-    sub.required = True
+def cmd_poster(client, args) -> dict:
+    return submit_and_maybe_poll(client, POSTER, {
+        "method": args.method,
+        "event_info": args.event_info,
+        "reference_image_urls": args.reference_image_urls,
+        "language": args.language,
+        "aspect_ratio": args.aspect_ratio,
+        "resolution": args.resolution,
+        "workspace_id": args.workspace_id,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    }, args)
 
-    for name in ("run", "submit"):
-        p = sub.add_parser(name, help=f"{name.capitalize()} image creation task")
-        p.add_argument("--prompt", help="Image prompt")
-        p.add_argument("--image-urls", dest="image_urls", help="Comma-separated reference image URLs")
-        p.add_argument("--model", help="Model name (default: nanobanana_pro)")
-        p.add_argument("--ratio", help="Aspect ratio")
-        p.add_argument("--resolution", help="Resolution")
-        p.add_argument("--concurrency", type=int, help="Parallel output count")
-        p.add_argument("--sync-mod", dest="sync_mod", action="store_true", help="Synchronous mode")
-        p.add_argument("--timeout", type=float, default=300)
-        p.add_argument("--interval", type=float, default=5)
 
-    p = sub.add_parser("query", help="Poll existing workspace ID")
-    p.add_argument("--workspace-id", dest="workspace_id", required=True)
-    p.add_argument("--timeout", type=float, default=300)
-    p.add_argument("--interval", type=float, default=5)
+def cmd_erase(client, args) -> dict:
+    return submit_and_maybe_poll(client, ERASER, {
+        "method": "inpainting",
+        "image_url": args.image_url,
+        "mask_url": args.mask_url,
+        "instruction": args.instruction,
+        "aspect_ratio": args.aspect_ratio,
+        "resolution": args.resolution,
+        "quantity": args.quantity,
+        "workspace_id": args.workspace_id,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    }, args)
 
-    args = parser.parse_args()
-    {"run": cmd_run, "submit": cmd_submit, "query": cmd_query}[args.subcommand](args, parser)
 
+def cmd_upscale(client, args) -> dict:
+    return submit_and_maybe_poll(client, ENHANCE, {
+        "method": "upscale",
+        "image_url": args.image_url,
+        "scale": args.scale,
+        "resolution": args.resolution,
+        "workspace_id": args.workspace_id,
+        "callback_id": args.callback_id,
+        "idempotency_key": args.idempotency_key,
+    }, args)
+
+
+def cmd_query(client, args) -> dict:
+    return client.poll(args.workspace_id, timeout=args.timeout, interval=args.interval)
+
+
+def _add_common(sub) -> None:
+    sub.add_argument("--resolution", default="")
+    sub.add_argument("--workspace-id", default="")
+    sub.add_argument("--idempotency-key", default="")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="AdsTurbo image creation")
+    sub = parser.add_subparsers(dest="command")
+
+    create = sub.add_parser("create", help="text to image, or edit existing images")
+    create.add_argument("--prompt", required=True)
+    create.add_argument("--image-urls", nargs="*", default=[], help="pass these to edit them")
+    create.add_argument("--model", default="")
+    create.add_argument("--ratio", default="")
+    create.add_argument("--resolution", default="")
+    create.add_argument("--quality", default="", help="gpt-image-2 only: low / medium / high")
+    create.add_argument("--num-images", type=int, help="*-seq models only, max 15")
+    create.add_argument("--async-mode", action="store_true", help="return a workspace_id instead of waiting")
+    create.add_argument("--callback-id", default="")
+    create.add_argument("--idempotency-key", default="")
+
+    cut = sub.add_parser("cutout", help="remove the background")
+    cut.add_argument("--image-url", required=True)
+    cut.add_argument("--output-format", default="", help="e.g. png")
+    _add_common(cut)
+    add_async_flags(cut)
+
+    ecom = sub.add_parser("ecommerce", help="product photo set")
+    ecom.add_argument("--reference-image-urls", nargs="*", default=[], help="product shots")
+    ecom.add_argument("--methods", nargs="*", default=[],
+                      help="hero_banner lifestyle_scene how_to_use close_detail material brand_closing")
+    ecom.add_argument("--user-input", default="", help="what you want emphasised")
+    ecom.add_argument("--product-info", default="")
+    ecom.add_argument("--language", default="")
+    ecom.add_argument("--aspect-ratio", default="")
+    _add_common(ecom)
+    add_async_flags(ecom)
+
+    poster = sub.add_parser("poster", help="campaign poster")
+    poster.add_argument("--event-info", required=True, help="what the poster is announcing")
+    poster.add_argument("--reference-image-urls", nargs="*", default=[])
+    poster.add_argument("--method", default="")
+    poster.add_argument("--language", default="")
+    poster.add_argument("--aspect-ratio", default="")
+    _add_common(poster)
+    add_async_flags(poster)
+
+    erase = sub.add_parser("erase", help="remove watermark or object")
+    erase.add_argument("--image-url", required=True)
+    erase.add_argument("--mask-url", default="", help="white = area to erase")
+    erase.add_argument("--instruction", default="", help="what to erase, in words")
+    erase.add_argument("--aspect-ratio", default="")
+    erase.add_argument("--quantity", type=int, help="how many variants")
+    _add_common(erase)
+    add_async_flags(erase)
+
+    up = sub.add_parser("upscale", help="raise resolution")
+    up.add_argument("--image-url", required=True)
+    up.add_argument("--scale", type=int, help="e.g. 2 or 4")
+    _add_common(up)
+    add_async_flags(up)
+
+    query = sub.add_parser("query", help="resume polling a known workspace_id")
+    query.add_argument("--workspace-id", required=True)
+    query.add_argument("--timeout", type=float, default=900)
+    query.add_argument("--interval", type=float, default=10)
+
+    return parser
+
+
+HANDLERS = {
+    "create": cmd_create,
+    "cutout": cmd_cutout,
+    "ecommerce": cmd_ecommerce,
+    "poster": cmd_poster,
+    "erase": cmd_erase,
+    "upscale": cmd_upscale,
+    "query": cmd_query,
+}
 
 if __name__ == "__main__":
-    main()
+    run_cli(build_parser(), HANDLERS)
