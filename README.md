@@ -78,10 +78,11 @@ Video tasks are asynchronous. The scripts submit and then poll until the result 
 
 - Website: [adsturbo.ai](https://adsturbo.ai)
 - Open API: [adsturbo.ai/open-api](https://adsturbo.ai/open-api)
+- API reference: [doc.adsturbo.ai](https://doc.adsturbo.ai)
 
 ## 中文说明
 
-AdsTurbo 开放接口的 agent skill：数字人口播、视频生成、广告复刻（含可改台词、换人换货的草稿流程）、视频精修与改造、AI 图片创作。安装方式同上，国内用户也可以在 [skillhub.cn](https://skillhub.cn) 搜索「AdsTurbo」安装。使用前在 https://adsturbo.ai?channel=github 获取 API Key，设置 `ADSTURBO_API_KEY` 环境变量。
+AdsTurbo 开放接口的 agent skill：数字人口播、视频生成、广告复刻（含可改台词、换人换货的草稿流程）、视频精修与改造、AI 图片创作。安装方式同上，国内用户也可以在 [skillhub.cn](https://skillhub.cn) 搜索「AdsTurbo」安装。使用前在 https://adsturbo.ai?channel=github 获取 API Key，设置 `ADSTURBO_API_KEY` 环境变量。完整接口文档见 [doc.adsturbo.ai](https://doc.adsturbo.ai)。
 
 ## License
 
