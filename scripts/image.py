@@ -31,8 +31,6 @@ def cmd_create(client, args) -> dict:
         "model": args.model,
         "ratio": args.ratio,
         "resolution": args.resolution,
-        "quality": args.quality,
-        "num_images": args.num_images,
         "sync_mod": not args.async_mode,
         "callback_id": args.callback_id,
         "idempotency_key": args.idempotency_key,
@@ -128,8 +126,6 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--model", default="")
     create.add_argument("--ratio", default="")
     create.add_argument("--resolution", default="")
-    create.add_argument("--quality", default="", help="gpt-image-2 only: low / medium / high")
-    create.add_argument("--num-images", type=int, help="*-seq models only, max 15")
     create.add_argument("--async-mode", action="store_true", help="return a workspace_id instead of waiting")
     create.add_argument("--callback-id", default="")
     create.add_argument("--idempotency-key", default="")

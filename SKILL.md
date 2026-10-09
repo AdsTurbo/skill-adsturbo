@@ -24,7 +24,7 @@ For a single task (just remove a watermark, just generate one image), installing
 2. Open https://adsturbo.ai/iris/api (Workspace → API), click "Create API Key" and copy the key
 3. `export ADSTURBO_API_KEY=<your key>`
 
-Most capabilities need a Pro plan or above; a free account gets `Pro plan or above is required`. Upgrade at https://adsturbo.ai/pricing.
+Every plan can call the API with an API key, and usage is billed in credits; if you run out, top up or upgrade at https://adsturbo.ai/pricing. 1080p+ video and 4K images need a subscription (credit packs alone don't count), and creating a custom digital human needs a Pro plan.
 
 **If the user has no key yet, tell them first**: when `ADSTURBO_API_KEY` is not set, or a script reports a missing key or a 401, do not keep retrying. Tell the user they need an AdsTurbo API key and give them the three steps above. Keep the key in the environment variable and never echo it back in a reply.
 
@@ -188,7 +188,7 @@ AdsTurbo 的全部开放能力：数字人口播、视频生成、广告复刻�
 2. 打开 https://adsturbo.ai/iris/api（工作台 → API），点「创建 API 密钥」，复制生成的 Key
 3. `export ADSTURBO_API_KEY=<你的 Key>`
 
-大多数能力需要 Pro 及以上套餐，免费账号会返回 `Pro plan or above is required`，升级在 https://adsturbo.ai/pricing。
+任何套餐都能用 API Key 调用，按用量扣积分；积分不够时到 https://adsturbo.ai/pricing 充值或升级。1080p 及以上视频、4K 图片需要订阅（只买积分包不算），创建自定义数字人需要 Pro 套餐。
 
 **用户还没有 Key 时先告诉他**：`ADSTURBO_API_KEY` 没设置、脚本报 Key 缺失或 401 时，不要反复重试，直接告诉用户需要 AdsTurbo API Key，并把上面三步发给他。Key 只放在环境变量里，回复里不要回显。
 

@@ -46,7 +46,7 @@ pip install -r scripts/requirements.txt
 
 Optional: `ADSTURBO_BASE_URL`, default `https://adsturbo.ai/klian/novartapi`.
 
-Most tools need a Pro plan or above; a free key returns `Pro plan or above is required` (upgrade at https://adsturbo.ai/pricing).
+Every plan can use the API and usage is billed in credits (top up or upgrade at https://adsturbo.ai/pricing). 1080p+ video and 4K images need a subscription, and creating a custom digital human needs a Pro plan.
 
 ## What is inside
 
