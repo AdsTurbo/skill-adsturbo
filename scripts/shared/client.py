@@ -28,7 +28,8 @@ WORK_STATUS_PATH = "/openapi/v1/work/status"
 WORK_BATCH_STATUS_PATH = "/openapi/v1/work/batch-status"
 
 TERMINAL_OK = "completed"
-PLAN_REQUIRED = 2103  # ret code for "Pro plan or above is required"
+PLAN_REQUIRED = 2103  # "Pro plan or above is required": Pro-only features such as custom digital humans
+SUBSCRIPTION_REQUIRED = 2100  # "Subscription required to proceed": 1080p+ video / 4K images
 TERMINAL_FAIL = "failed"
 
 
@@ -207,7 +208,9 @@ def run_cli(parser, handlers: dict) -> None:
     except AdsTurboError as exc:
         print(f"Request failed: {exc.msg}", file=sys.stderr)
         if exc.code == PLAN_REQUIRED:
-            print("This needs a Pro plan or above. Upgrade at https://adsturbo.ai/pricing", file=sys.stderr)
+            print("This feature needs a Pro plan. Upgrade at https://adsturbo.ai/pricing", file=sys.stderr)
+        elif exc.code == SUBSCRIPTION_REQUIRED:
+            print("1080p+ video and 4K images need a subscription. Subscribe at https://adsturbo.ai/pricing", file=sys.stderr)
         sys.exit(1)
     except TimeoutError as exc:
         print(f"Timed out: {exc}", file=sys.stderr)

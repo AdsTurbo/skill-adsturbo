@@ -13,7 +13,7 @@ python3 scripts/image.py create --prompt "Replace the background with a marble c
   --image-urls https://.../product.jpg
 ```
 
-`--image-urls` empty = text-to-image, non-empty = edit these images. Returns the image URL synchronously by default; add `--async-mode` to get back a `workspace_id` and poll it yourself.
+`--image-urls` empty = text-to-image, non-empty = edit these images. Each call produces exactly one image. Returns `result_url` synchronously by default; add `--async-mode` to get back a `workspace_id` and poll it yourself.
 
 ### Model Capabilities and Parameters (Important)
 
@@ -21,18 +21,16 @@ The value sets for `ratio` / `resolution` **vary by model** — check the table 
 
 | Model | Text-to-Image | Editing | ratio | resolution |
 |---|---|---|---|---|
-| `nanobanana-pro` (default) | ✅ | ✅ | 16:9 / 1:1 / 9:16 / 21:9 / 2:3 / 3:2 | 1k / 2k / 4k / 8k |
-| `nano-banana-2` | ✅ | ✅ | same as above | 0.5k / 1k / 2k / 4k |
-| `nano-banana-2-fast` | ✅ | ✅ | same as above | 2k / 4k |
-| `seedream-4.5` | ✅ | ✅ | 16:9 / 1:1 / 9:16 / 2:3 / 3:2 | — |
-| `seedream-5.0-lite` | ✅ | ✅ | same as above | — |
-| `seedream-4.5-seq` | — | ✅ | same as above | — |
-| `seedream-5.0-lite-seq` | — | ✅ | same as above | — |
-| `gpt-image-2` | ✅ | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 21:9 | 1k / 2k |
+| `nanobanana-pro` (default) | ✅ | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 5:7 / 7:5 / 9:16 / 16:9 / 21:9 / 1:4 / 4:1 | 1k / 2k / 4k / 8k |
+| `nano-banana-2` | ✅ | ✅ | same as above + 1:8 / 8:1 | 0.5k / 1k / 2k / 4k |
+| `nano-banana-2-fast` | ✅ | ✅ | same as above + 1:8 / 8:1 | 2k / 4k |
+| `seedream-5.0-pro` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 9:21 / 21:9 | 2k (default) / 1k |
+| `seedream-5.0-lite` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 1:4 / 4:1 / 1:8 / 8:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 5:7 / 7:5 / 9:16 / 16:9 / 9:21 / 21:9 | — |
+| `gpt-image-2` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 9:21 / 21:9 | 1k / 2k / 4k |
 | `grok-2-image` | ✅ | — | not validated | — |
-| `grok-imagine-image` | — | ✅ | not validated | — |
+| `grok-imagine-image` | — | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 21:9 | — |
 
-The two `-seq`-suffixed models support editing only, not text-to-image. Confirm whether the user wants text-to-image or editing before choosing a model.
+`grok-2-image` is text-to-image only; `grok-imagine-image` is editing only. Confirm whether the user wants text-to-image or editing before choosing a model. Leave `resolution` empty for models that do not support it.
 
 ## E-commerce and Marketing Images
 
@@ -110,7 +108,7 @@ python3 scripts/image.py create --prompt "把背景换成大理石台面" \
   --image-urls https://.../product.jpg
 ```
 
-`--image-urls` 空 = 文生图，非空 = 编辑这些图。默认同步返回图片 URL；加 `--async-mode` 则返回 `workspace_id` 自行轮询。
+`--image-urls` 空 = 文生图，非空 = 编辑这些图。每次固定出 1 张。默认同步返回 `result_url`；加 `--async-mode` 则返回 `workspace_id` 自行轮询。
 
 ### 模型能力与参数（关键）
 
@@ -118,18 +116,16 @@ python3 scripts/image.py create --prompt "把背景换成大理石台面" \
 
 | 模型 | 文生图 | 编辑 | ratio | resolution |
 |---|---|---|---|---|
-| `nanobanana-pro`（默认） | ✅ | ✅ | 16:9 / 1:1 / 9:16 / 21:9 / 2:3 / 3:2 | 1k / 2k / 4k / 8k |
-| `nano-banana-2` | ✅ | ✅ | 同上 | 0.5k / 1k / 2k / 4k |
-| `nano-banana-2-fast` | ✅ | ✅ | 同上 | 2k / 4k |
-| `seedream-4.5` | ✅ | ✅ | 16:9 / 1:1 / 9:16 / 2:3 / 3:2 | — |
-| `seedream-5.0-lite` | ✅ | ✅ | 同上 | — |
-| `seedream-4.5-seq` | — | ✅ | 同上 | — |
-| `seedream-5.0-lite-seq` | — | ✅ | 同上 | — |
-| `gpt-image-2` | ✅ | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 21:9 | 1k / 2k |
+| `nanobanana-pro`（默认） | ✅ | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 5:7 / 7:5 / 9:16 / 16:9 / 21:9 / 1:4 / 4:1 | 1k / 2k / 4k / 8k |
+| `nano-banana-2` | ✅ | ✅ | 同上 + 1:8 / 8:1 | 0.5k / 1k / 2k / 4k |
+| `nano-banana-2-fast` | ✅ | ✅ | 同上 + 1:8 / 8:1 | 2k / 4k |
+| `seedream-5.0-pro` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 9:21 / 21:9 | 2k（默认）/ 1k |
+| `seedream-5.0-lite` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 1:4 / 4:1 / 1:8 / 8:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 5:7 / 7:5 / 9:16 / 16:9 / 9:21 / 21:9 | — |
+| `gpt-image-2` | ✅ | ✅ | 1:1 / 1:2 / 2:1 / 1:3 / 3:1 / 2:3 / 3:2 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 9:21 / 21:9 | 1k / 2k / 4k |
 | `grok-2-image` | ✅ | — | 不校验 | — |
-| `grok-imagine-image` | — | ✅ | 不校验 | — |
+| `grok-imagine-image` | — | ✅ | 1:1 / 3:2 / 2:3 / 3:4 / 4:3 / 4:5 / 5:4 / 9:16 / 16:9 / 21:9 | — |
 
-`-seq` 后缀的两个模型只能编辑不能文生。选模型前先确认用户要的是文生还是编辑。
+`grok-2-image` 只能文生，`grok-imagine-image` 只能编辑。选模型前先确认用户要的是文生还是编辑。`resolution` 不支持的模型必须留空。
 
 ## 电商与营销图
 
